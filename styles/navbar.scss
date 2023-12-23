@@ -1,0 +1,24 @@
+navbar {
+    display: flex;
+    border: 1px solid black;
+    justify-content: space-around;
+    align-items: center;
+}
+
+navbar>a>img {
+    height: 100px;
+}
+
+.navdiv {
+    display: flex;
+}
+
+.navdiv>* {
+    padding: 0px 15px;
+    cursor: pointer;
+}
+
+a {
+    text-decoration: none;
+    color: black;
+}

@@ -1,0 +1,13 @@
+.posts {
+    display: flex;
+    max-width: 1300px;
+    margin: auto;
+    justify-content: space-around;
+    flex-wrap: wrap;
+}
+
+
+.post {
+    width: 500px;
+    height: auto;
+}
