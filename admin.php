@@ -4,8 +4,7 @@ session_start();
 
 include 'navbar.php';
 
-//echo $_POST['photos'][1];
-
+//____________________________________dodawanie postu____________________________________
 if(!isset($_SESSION["admin_id"])){
     echo '<h3>Brak dostępu do tej strony</h3>';
 }else{
@@ -22,8 +21,7 @@ if(!isset($_SESSION["admin_id"])){
                 for ($i=0; $i <sizeof($_POST['photos']) ; $i++) { 
                     mysqli_query($connect,"INSERT INTO `images`(`image_id`, `src`, `post_id`) VALUES ('','".$_POST['photos'][$i]."','".$row[0]."')");
                 }
-            };
-            
+            }
         }else{
             echo 'wszystko wpisz';
         }
@@ -31,6 +29,7 @@ if(!isset($_SESSION["admin_id"])){
     
 }
 
+//____________________________________tabelka postów____________________________________
 $posts = mysqli_query($connect,"SELECT * FROM `posts`");
 echo "<table>
 <tr>
@@ -56,11 +55,18 @@ while ($row = mysqli_fetch_array($posts)) {
 
 echo "</table>";
 
+
+//____________________________________usuwanie edytowanie postu__________________
 if(isset($_POST['delete'])){
    $id = $_POST['id'];
-   mysqli_query($connect, "DELETE FROM posts WHERE post_id = $id");
+   $result = mysqli_query($connect, "DELETE FROM posts WHERE post_id = $id");
    mysqli_close($connect);
 
+   if ($result) {
+    // Przekierowanie na tę samą stronę po usunięciu
+    header("Location: ".$_SERVER['PHP_SELF']);
+    exit();
+    } 
 }
 
 if(isset($_POST['edit'])){

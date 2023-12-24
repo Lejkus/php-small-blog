@@ -4,6 +4,7 @@ $connect = mysqli_connect('localhost',"root","","cms");
 session_start();
 
 include 'navbar.php';
+include 'ObliczCzas.php';
 
 // if(isset($_SESSION["admin_id"])){
 //     echo '<h1>zalogowano jako '.$_SESSION["admin_id"].'</h1>';
@@ -15,22 +16,48 @@ include 'navbar.php';
 //session_destroy();
 echo '<div class="posts">';
 
+//____________________________________zapytanie o ilośc postów w bazie w celu paginacji___________________________
+$zapytanie = mysqli_query($connect,"SELECT count(*) FROM `posts`");
+while ($row = mysqli_fetch_array($zapytanie)) {
+    $ilosc=$row[0];
+};
+//_co ile paginacja_
+$amount = 6;
 
-$posts = mysqli_query($connect,"SELECT * FROM `posts` join images on images.post_id = posts.post_id GROUP BY posts.post_id ORDER BY images.image_id;");
+if(!isset($_GET["type"])){
+    if(isset($_GET["site"]) ){
+        $site = $_GET["site"];
+        $from = $site*$amount;
+        $posts = mysqli_query($connect,"SELECT * FROM `posts` join images on images.post_id = posts.post_id GROUP BY posts.post_id ORDER BY date DESC LIMIT $from,$amount;");
+    }else{
+        $posts = mysqli_query($connect,"SELECT * FROM `posts` join images on images.post_id = posts.post_id GROUP BY posts.post_id ORDER BY date DESC LIMIT 0,$amount;");
+    }
+    
+}else{
+    if($_GET["type"]=='sets'){
+        $posts = mysqli_query($connect,"SELECT * FROM `posts` join images on images.post_id = posts.post_id where posts.type = 'set' GROUP BY posts.post_id ORDER BY date DESC;");
+    }else if($_GET["type"]=='figs'){
+        $posts = mysqli_query($connect,"SELECT * FROM `posts` join images on images.post_id = posts.post_id where posts.type = 'fig' GROUP BY posts.post_id ORDER BY date DESC;");
+    }else{
+        echo 'error'; 
+    }
+}
 
 
 
+
+//________________________________Wyświetlanie postów________________________________
 while ($row = mysqli_fetch_array($posts)) {
     $post_id = $row['post_id'];
 
     echo '<div style="cursor:pointer;" class="post" onclick="location.href= `/cms/post.php?id='.$post_id.'`">';
-    echo '<h3 class="post-data">'.substr($row['date'], 0, -9).'</h3>';
+    echo '<h3 class="post-data">'.czasTemu($row['date']).'</h3>';
     echo '<h1 class="post-title">'.$row['title'].'</h1>';
 
                
     $image = mysqli_query($connect,"SELECT * FROM `images` WHERE post_id = $post_id ORDER BY image_id ASC LIMIT 1;");
     while ($row2 = mysqli_fetch_array($image)) {
-        echo '<img style="width:500px;" src="'.$row2["src"].'">';
+        echo '<img src="'.$row2["src"].'">';
     };
     
 
@@ -41,6 +68,23 @@ while ($row = mysqli_fetch_array($posts)) {
     // };
     echo '</div>';
 };
-echo '</div>'
 
+
+echo '</div>';
+
+
+//___________________________________________________Paginacja________________________________________
+echo '<div class="pagination">';
+    for ($i = 0; $i+1 <= ceil($ilosc/6); $i++) {
+        if(isset($_GET["site"]) and ($_GET["site"] == $i)){
+            echo '<div onclick="location.href=`/cms/main.php?site='.$i.'`" class="pagin-active">'.($i+1).'</div>';
+        }else if(!isset($_GET["site"]) and $i ==0){
+            echo '<div onclick="location.href=`/cms/main.php?site='.$i.'`" class="pagin-active">'.($i+1).'</div>';
+        }
+        else{
+            echo '<div onclick="location.href=`/cms/main.php?site='.$i.'`" class="pagin">'.($i+1).'</div>';
+        }
+        
+    }
+echo '<div>';
 ?>

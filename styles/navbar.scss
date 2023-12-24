@@ -1,6 +1,15 @@
+*{
+    font-family: Helvetica ;
+    font-weight: 100;
+}
+html,body{
+    margin: 0;
+}
+
 navbar {
     display: flex;
-    border: 1px solid black;
+    margin: 1px;
+    border: 1.5px solid black;
     justify-content: space-around;
     align-items: center;
 }

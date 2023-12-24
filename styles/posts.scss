@@ -4,10 +4,42 @@
     margin: auto;
     justify-content: space-around;
     flex-wrap: wrap;
+    margin-top: 100px;
 }
 
+img {
+    max-width: 500px;
+    max-height: 500px;
+}
 
 .post {
     width: 500px;
+    margin-top: 100px;
     height: auto;
+}
+
+.pagination {
+    width: 1300px;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin: auto;
+    margin-top: 100px;
+}
+
+.pagin {
+    font-size: 20px;
+    border: 1px solid black;
+    padding: 15px;
+    margin: 10px;
+    cursor: pointer;
+}
+
+.pagin-active{
+    font-size: 20px;
+    border: 1px solid black;
+    background-color: rgb(199, 199, 199);
+    padding: 15px;
+    margin: 10px;
+    cursor: pointer;
 }

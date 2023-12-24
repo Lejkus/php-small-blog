@@ -4,7 +4,7 @@
 echo '<navbar>';
 echo '<a href="/cms/main.php"><img src="https://i.pinimg.com/474x/39/52/5a/39525a29fb5931ffbc9eb59db3cb6e13--lego-wallpaper-letters.jpg"></a>';
 echo '<div class="navdiv">';
-echo '<h3>Wszystko</h3>';
+echo '<h3 onclick="location.href= `/cms/main.php`">Wszystko</h3>';
 echo '<h3 onclick="location.href= `/cms/main.php?type=sets`">Zestawy</h3>';
 echo '<h3 onclick="location.href= `/cms/main.php?type=figs`">Figurki</h3>';
 
