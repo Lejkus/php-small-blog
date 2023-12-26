@@ -1,9 +1,12 @@
+<link rel="stylesheet" href="styles/admin.scss?v=<?php echo time(); ?>">
+
 <?php
 $connect = mysqli_connect('localhost',"root","","cms");
 session_start();
 
 include 'navbar.php';
-
+echo "<div class='admin'>";
+echo '<a class="logout" href="Logout.php">Wyloguj się</a>';
 //____________________________________dodawanie postu____________________________________
 if(!isset($_SESSION["admin_id"])){
     echo '<h3>Brak dostępu do tej strony</h3>';
@@ -69,12 +72,49 @@ if(isset($_POST['delete'])){
     } 
 }
 
+//___________________________________dodawanie pola do  edytowania postu__________________
 if(isset($_POST['edit'])){
-    echo $_POST['id'];
+    $id =  $_POST['id'];
+    $post = mysqli_query($connect,"SELECT * FROM `posts` WHERE post_id =$id;");
+    while ($row = mysqli_fetch_array($post)) {
+    echo '<div class="post-form"><form method="post">
+            <input type="hidden" name="edit-id" value="'.$row[0].'">
+            <input placeholder="tytul" name="edit-title" value="'.$row[1].'">
+        
+            <input placeholder="opis" name="edit-description" value="'.$row[2].'">
+        
+            <select name="edit-nazwa">';
+            if ($row[4] == "fig") {
+                echo '<option value="set">zestaw</option>
+                      <option selected value="fig">figurka</option>';
+            } else {
+                echo '<option selected value="set">zestaw</option>
+                      <option value="fig">figurka</option>';
+            }
+            echo '</select>
+        
+            <button type="submit">Zmień post </button>
+        </form></div>';
+    }
 }
+//___________________________________edytowanie postu__________________
+if(isset($_POST['edit-title']) and isset($_POST['edit-description']) and isset($_POST['edit-nazwa'])){
+    $id = $_POST['edit-id'];
+    $title = $_POST['edit-title'];
+    $description = $_POST['edit-description'];
+    $nazwa = $_POST['edit-nazwa'];
 
+    $result = mysqli_query($connect, "UPDATE `posts` SET `title`='$title',`description`='$description',`type`='$nazwa' WHERE post_id = $id");
+    mysqli_close($connect);
+ 
+    if ($result) {
+     // Przekierowanie na tę samą stronę po usunięciu
+     header("Location: ".$_SERVER['PHP_SELF']);
+     exit();
+    } 
+ }
 ?>
-<script></script>
+<div class="post-form">
 <form method="post">
     <input placeholder="tytul" name="title">
 
@@ -114,3 +154,5 @@ if(isset($_POST['edit'])){
     });
     </script>
 </form>
+</div>
+</div>

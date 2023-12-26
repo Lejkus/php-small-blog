@@ -17,7 +17,16 @@ include 'ObliczCzas.php';
 echo '<div class="posts">';
 
 //____________________________________zapytanie o ilośc postów w bazie w celu paginacji___________________________
-$zapytanie = mysqli_query($connect,"SELECT count(*) FROM `posts`");
+if(!isset($_GET["type"])){
+    $zapytanie = mysqli_query($connect,"SELECT count(*) FROM `posts`");
+}else{
+    if($_GET["type"]=='sets'){
+        $zapytanie = mysqli_query($connect,"SELECT count(*) FROM `posts` where posts.type = 'set'");
+    }else if($_GET["type"]=='figs'){
+        $zapytanie = mysqli_query($connect,"SELECT count(*) FROM `posts` where posts.type = 'fig'");
+    }
+}
+
 while ($row = mysqli_fetch_array($zapytanie)) {
     $ilosc=$row[0];
 };
@@ -34,12 +43,24 @@ if(!isset($_GET["type"])){
     }
     
 }else{
-    if($_GET["type"]=='sets'){
-        $posts = mysqli_query($connect,"SELECT * FROM `posts` join images on images.post_id = posts.post_id where posts.type = 'set' GROUP BY posts.post_id ORDER BY date DESC;");
-    }else if($_GET["type"]=='figs'){
-        $posts = mysqli_query($connect,"SELECT * FROM `posts` join images on images.post_id = posts.post_id where posts.type = 'fig' GROUP BY posts.post_id ORDER BY date DESC;");
+    if(isset($_GET["site"]) ){
+        $site = $_GET["site"];
+        $from = $site*$amount;
+        if($_GET["type"]=='sets'){
+            $posts = mysqli_query($connect,"SELECT * FROM `posts` join images on images.post_id = posts.post_id where posts.type = 'set' GROUP BY posts.post_id ORDER BY date DESC LIMIT $from,$amount;");
+        }else if($_GET["type"]=='figs'){
+            $posts = mysqli_query($connect,"SELECT * FROM `posts` join images on images.post_id = posts.post_id where posts.type = 'fig' GROUP BY posts.post_id ORDER BY date DESC LIMIT $from,$amount;");
+        }else{
+            echo 'error'; 
+        }
     }else{
-        echo 'error'; 
+        if($_GET["type"]=='sets'){
+            $posts = mysqli_query($connect,"SELECT * FROM `posts` join images on images.post_id = posts.post_id where posts.type = 'set' GROUP BY posts.post_id ORDER BY date DESC LIMIT 0,$amount;");
+        }else if($_GET["type"]=='figs'){
+            $posts = mysqli_query($connect,"SELECT * FROM `posts` join images on images.post_id = posts.post_id where posts.type = 'fig' GROUP BY posts.post_id ORDER BY date DESC LIMIT 0,$amount;");
+        }else{
+            echo 'error'; 
+        }
     }
 }
 
@@ -76,13 +97,12 @@ echo '</div>';
 //___________________________________________________Paginacja________________________________________
 echo '<div class="pagination">';
     for ($i = 0; $i+1 <= ceil($ilosc/6); $i++) {
-        if(isset($_GET["site"]) and ($_GET["site"] == $i)){
-            echo '<div onclick="location.href=`/cms/main.php?site='.$i.'`" class="pagin-active">'.($i+1).'</div>';
-        }else if(!isset($_GET["site"]) and $i ==0){
-            echo '<div onclick="location.href=`/cms/main.php?site='.$i.'`" class="pagin-active">'.($i+1).'</div>';
-        }
-        else{
-            echo '<div onclick="location.href=`/cms/main.php?site='.$i.'`" class="pagin">'.($i+1).'</div>';
+        for ($i = 0; $i+1 <= ceil($ilosc/6); $i++) {
+            $isActive = (isset($_GET["site"]) and ($_GET["site"] == $i)) || (!isset($_GET["site"]) and $i == 0);
+            $class = $isActive ? 'pagin-active' : 'pagin';
+        
+            echo "<div onclick=\"location.search+= '&site={$i}'\" class='{$class}'>".($i+1).'</div>';
+
         }
         
     }
